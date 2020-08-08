@@ -10,6 +10,7 @@ if __name__ == "__main__":
 
     topic  = config['config']['topic']
     disk  = config['config']['disk']
+    temperature  = config['config']['temperature']
     username  = config['mqtt-server']['username']
     password  = config['mqtt-server']['password']
     mqtt_host = config['mqtt-server']['host']
@@ -21,15 +22,15 @@ if __name__ == "__main__":
     mqtt_client.username_pw_set(username, password=password)
     mqtt_client.tls_set(ca_certs=ca_certs)
     mqtt_client.connect(mqtt_host, mqtt_port, 60)
-    
+
     attributes = "{"
     attributes += "\"cpu-usage\": {},".format(psutil.cpu_percent())
-    attributes += "\"cpu-temp\": {},".format(max([x.current for x in psutil.sensors_temperatures()["k10temp"]]))
+    attributes += "\"cpu-temp\": {},".format(max([x.current for x in psutil.sensors_temperatures()[temperature]]))
     attributes += "\"mem-usage\": {},".format(psutil.virtual_memory().percent)
     attributes += "\"swap-usage\": {},".format(psutil.swap_memory().percent)
     attributes += "\"disk-usage\": {}".format(psutil.disk_usage(disk).percent)
     attributes += "}"
-    
+
     mqtt_client.publish(topic, payload=attributes)
 
     mqtt_client.disconnect()
