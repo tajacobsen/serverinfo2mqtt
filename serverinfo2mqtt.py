@@ -6,7 +6,7 @@ import psutil
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
-    config.read("config.ini")
+    config.read(".serverinfo.ini")
 
     topic  = config['config']['topic']
     disk  = config['config']['disk']
@@ -30,6 +30,7 @@ if __name__ == "__main__":
     attributes += "\"disk-usage\": {}".format(psutil.disk_usage(disk).percent)
     attributes += "}"
     
-    mqtt_client.publish(topic, payload=attributes)
+    mqtt_client.publish(topic+"/state",      payload="online",   retain=False)
+    mqtt_client.publish(topic+"/attributes", payload=attributes, retain=True)
 
     mqtt_client.disconnect()
